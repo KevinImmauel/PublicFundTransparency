@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ETH Donation QR</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+</head>
+<body style="font-family: sans-serif; padding: 2rem;">
+  <h2>Generate ETH Donation QR Code</h2>
+
+  <label>Amount in ETH:</label><br />
+  <input id="amount" type="text" placeholder="e.g., 0.01"><br><br>
+
+  <label>Purpose:</label><br />
+  <input id="purpose" type="text" placeholder="e.g., Flood relief"><br><br>
+
+  <button onclick="generateQR()">Generate QR</button>
+
+  <canvas id="qr" style="margin-top: 2rem;"></canvas>
+
+  <script>
+    const contractAddress = "0xe068dE326f03080aaF82b10027F862c786B909Ed"; // 🔁 Replace with your contract address
+
+    function generateQR() {
+      const amountEth = document.getElementById("amount").value;
+      const purpose = document.getElementById("purpose").value;
+
+      if (!amountEth || isNaN(amountEth) || parseFloat(amountEth) <= 0) {
+        alert("Please enter a valid amount in ETH.");
+        return;
+      }
+
+      // value in wei (as a hex string for the link)
+      const amountWeiHex = "0x" + (parseFloat(amountEth) * 1e18).toString(16).split(".")[0];
+
+      // purpose is optional, so we skip it in URL (MetaMask deeplink doesn’t handle it)
+      const link = `https://metamask.app.link/send/${contractAddress}?value=${amountWeiHex}`;
+
+      QRCode.toCanvas(document.getElementById("qr"), link, { width: 256 }, function (err) {
+        if (err) console.error(err);
+      });
+    }
+  </script>
+</body>
+</html>
