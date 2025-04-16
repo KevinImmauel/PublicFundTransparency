@@ -6,123 +6,98 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FundView</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class'
-    };
+    }
   </script>
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 
-    <nav class="bg-white dark:bg-gray-800 shadow py-2 sticky top-0">
-      <div class="container mx-auto flex justify-between items-center px-2">
-        <h1 class="text-3xl text-green-600 dark:text-green-400 font-bold leading-tight ml-[20px]">FundView</h1>
-        <div class="md:hidden">
-          <button id="menuToggle" class="text-gray-700 dark:text-white text-xl focus:outline-none">
-            &#8942;
-          </button>
-        </div>
-        <div id="navMenu" class="hidden md:flex gap-2 items-center flex-col md:flex-row absolute md:static right-4 top-14 md:top-0 bg-white dark:bg-gray-800 p-2 rounded shadow md:shadow-none z-50">
-          
-          
-          <label class="relative flex items-center cursor-pointer group">
-            <input type="checkbox" id="darkToggle" class="sr-only" onchange="toggleDarkMode()" />
-            <div class="w-8 h-3 bg-gray-400 rounded-full shadow-inner dark:bg-gray-600 transition-colors"></div>
-            <div class="dot absolute w-5 h-5 bg-white rounded-full shadow -left-1 -top-1 transition-transform duration-300 dark:translate-x-full"></div>
-            <span id="darkTooltip" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-0.5 px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-              Enable Light Mode
-            </span>
-          </label>
-          <a href="/index.html" class="px-3 py-1 text-sm text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300/30 dark:hover:bg-white/10 transition duration-300">
-            Home
-          </a>
-          <a href="#contact-us" class="px-3 py-1 text-sm text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300/30 dark:hover:bg-white/10 transition duration-300">
-            Contact Us
-          </a>
-        </div>
+  <nav class="bg-white dark:bg-gray-800 shadow py-2 sticky top-0 z-100">
+    <div class="container mx-auto flex justify-between items-center px-2">
+      <h1 class="text-3xl text-green-600 dark:text-green-400 font-bold leading-tight ml-[20px]">FundView</h1>
+      <div class="md:hidden">
+        <button id="menuToggle" class="text-gray-700 dark:text-white text-xl focus:outline-none">
+          &#8942;
+        </button>
       </div>
-    </nav>
-  
-  <div class="content bg-white-100">
-    <div class="dashboard">
-        <h1 class="text-6xl font-bold ml-7 mt-10">Dashboard</h1>
+      <div id="navMenu" class="hidden md:flex gap-2 items-center flex-col md:flex-row absolute md:static right-4 top-14 md:top-0 bg-white dark:bg-gray-800 p-2 rounded shadow md:shadow-none z-50">
+        
+        
+        <label class="relative flex items-center cursor-pointer group">
+          <input type="checkbox" id="darkToggle" class="sr-only" onchange="toggleDarkMode()" />
+          <div class="w-8 h-3 bg-gray-400 rounded-full shadow-inner dark:bg-gray-600 transition-colors"></div>
+          <div class="dot absolute w-5 h-5 bg-white rounded-full shadow -left-1 -top-1 transition-transform duration-300 dark:translate-x-full"></div>
+          <span id="darkTooltip" class="absolute -top-7 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-0.5 px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+            Enable Light Mode
+          </span>
+        </label>
+        <a href="/index.html" class="px-3 py-1 text-sm text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300/30 dark:hover:bg-white/10 transition duration-300">
+          Home
+        </a>
+        <a href="#contact-us" class="px-3 py-1 text-sm text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300/30 dark:hover:bg-white/10 transition duration-300">
+          Contact Us
+        </a>
+      </div>
     </div>
-    <div class="max-h-46 overflow-x-auto m-20 mt-10">
-        <table id="fundTable" class="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-700">
+  </nav>
+  <div class="content">
+    <div class="dashboard">
+        <h1 class="text-6xl font-bold ml-7 mt-10 ">Dashboard</h1>
+    </div>
+    <div class="max-h-46 overflow-x-auto m-20">
+        <table class="min-w-full divide-y-2 divide-gray-200 dark:divide-gray-700">
           <thead class="sticky top-0 bg-white ltr:text-left rtl:text-right dark:bg-gray-900">
             <tr class="*:font-medium *:text-gray-900 dark:*:text-white">
-              <th class="px-3 py-2 whitespace-nowrap">User Id</th>
-              <th class="px-3 py-2 whitespace-nowrap">Transfered To</th>
-              <th class="px-3 py-2 whitespace-nowrap">Transfered By</th>
-              <th class="px-3 py-2 whitespace-nowrap">Date</th>
-              <th class="px-3 py-2 whitespace-nowrap">Amount(in USD)</th>
-              <th class="px-3 py-2 whitespace-nowrap">Purpose</th>
-              <th class="px-3 py-2 whitespace-nowrap">Type</th>
+              <th class="px-3 py-2 whitespace-nowrap">Name</th>
+              <th class="px-3 py-2 whitespace-nowrap">DoB</th>
+              <th class="px-3 py-2 whitespace-nowrap">Role</th>
+              <th class="px-3 py-2 whitespace-nowrap">Salary</th>
             </tr>
           </thead>
+      
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
             <tr class="*:text-gray-900 *:first:font-medium dark:*:text-white">
-              <td class="px-3 py-2 whitespace-nowrap">123</td>
-              <td class="px-3 py-2 whitespace-nowrap">ABC</td>
-              <td class="px-3 py-2 whitespace-nowrap">XYZ</td>
-              <td class="px-3 py-2 whitespace-nowrap">1-04-2025</td>
-              <td class="px-3 py-2 whitespace-nowrap">$200</td>
-              <td class="px-3 py-2 whitespace-nowrap">Education</td>
-              <td class="px-3 py-2 whitespace-nowrap">Withdraw</td>
+              <td class="px-3 py-2 whitespace-nowrap">Nandor the Relentless</td>
+              <td class="px-3 py-2 whitespace-nowrap">04/06/1262</td>
+              <td class="px-3 py-2 whitespace-nowrap">Vampire Warrior</td>
+              <td class="px-3 py-2 whitespace-nowrap">$0</td>
             </tr>
+      
             <tr class="*:text-gray-900 *:first:font-medium dark:*:text-white">
-              <td class="px-3 py-2 whitespace-nowrap">123</td>
-              <td class="px-3 py-2 whitespace-nowrap">ABC</td>
-              <td class="px-3 py-2 whitespace-nowrap">XYZ</td>
-              <td class="px-3 py-2 whitespace-nowrap">1-04-2025</td>
-              <td class="px-3 py-2 whitespace-nowrap">$200</td>
-              <td class="px-3 py-2 whitespace-nowrap">Food Distribution</td>
-              <td class="px-3 py-2 whitespace-nowrap">Donate</td>
+              <td class="px-3 py-2 whitespace-nowrap">Laszlo Cravensworth</td>
+              <td class="px-3 py-2 whitespace-nowrap">19/10/1678</td>
+              <td class="px-3 py-2 whitespace-nowrap">Vampire Gentleman</td>
+              <td class="px-3 py-2 whitespace-nowrap">$0</td>
             </tr>
+      
             <tr class="*:text-gray-900 *:first:font-medium dark:*:text-white">
-              <td class="px-3 py-2 whitespace-nowrap">123</td>
-              <td class="px-3 py-2 whitespace-nowrap">ABC</td>
-              <td class="px-3 py-2 whitespace-nowrap">XYZ</td>
-              <td class="px-3 py-2 whitespace-nowrap">1-04-2025</td>
-              <td class="px-3 py-2 whitespace-nowrap">$200</td>
-              <td class="px-3 py-2 whitespace-nowrap">Shelter for orphans</td>
-              <td class="px-3 py-2 whitespace-nowrap">Withdraw</td>
+              <td class="px-3 py-2 whitespace-nowrap">Nadja</td>
+              <td class="px-3 py-2 whitespace-nowrap">15/03/1593</td>
+              <td class="px-3 py-2 whitespace-nowrap">Vampire Seductress</td>
+              <td class="px-3 py-2 whitespace-nowrap">$0</td>
             </tr>
+      
             <tr class="*:text-gray-900 *:first:font-medium dark:*:text-white">
-              <td class="px-3 py-2 whitespace-nowrap">123</td>
-              <td class="px-3 py-2 whitespace-nowrap">ABC</td>
-              <td class="px-3 py-2 whitespace-nowrap">XYZ</td>
-              <td class="px-3 py-2 whitespace-nowrap">1-04-2025</td>
-              <td class="px-3 py-2 whitespace-nowrap">$200</td>
-              <td class="px-3 py-2 whitespace-nowrap">Education</td>
-              <td class="px-3 py-2 whitespace-nowrap">Withdraw</td>
+              <td class="px-3 py-2 whitespace-nowrap">Colin Robinson</td>
+              <td class="px-3 py-2 whitespace-nowrap">01/09/1971</td>
+              <td class="px-3 py-2 whitespace-nowrap">Energy Vampire</td>
+              <td class="px-3 py-2 whitespace-nowrap">$53,000</td>
             </tr>
+      
             <tr class="*:text-gray-900 *:first:font-medium dark:*:text-white">
-              <td class="px-3 py-2 whitespace-nowrap">123</td>
-              <td class="px-3 py-2 whitespace-nowrap">ABC</td>
-              <td class="px-3 py-2 whitespace-nowrap">XYZ</td>
-              <td class="px-3 py-2 whitespace-nowrap">1-04-2025</td>
-              <td class="px-3 py-2 whitespace-nowrap">$200</td>
-              <td class="px-3 py-2 whitespace-nowrap">Education</td>
-              <td class="px-3 py-2 whitespace-nowrap">Donate</td>
+              <td class="px-3 py-2 whitespace-nowrap">Guillermo de la Cruz</td>
+              <td class="px-3 py-2 whitespace-nowrap">18/11/1991</td>
+              <td class="px-3 py-2 whitespace-nowrap">Familiar/Vampire Hunter</td>
+              <td class="px-3 py-2 whitespace-nowrap">$0</td>
             </tr>
           </tbody>
         </table>
-    </div>
-
-    <!-- Graphs Container -->
-    <div class="flex justify-center gap-6 px-6 mb-10 flex-wrap">
-      <div class="w-full sm:w-[48%] bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
-        <canvas id="lineChart"></canvas>
       </div>
-      <div class="w-full sm:w-[48%] bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4">
-        <canvas id="pieChart"></canvas>
-      </div>
-    </div>
+      
   </div>
-
   <footer class="bg-white lg:grid lg:grid-cols-5 dark:bg-gray-900 sticky inserty-0" id="contact-us">
     <div class="relative block h-32 lg:col-span-2 lg:h-full">
       <img
@@ -337,66 +312,8 @@
     </div>
   </footer>
   <script>
-    function extractDataFromTable() {
-      const rows = document.querySelectorAll("#fundTable tbody tr");
-      const amounts = [];
-      const types = {};
-      rows.forEach(row => {
-        const amountCell = row.cells[4]?.textContent.trim();
-        const typeCell = row.cells[6]?.textContent.trim();
-        if (amountCell && typeCell) {
-          const amount = parseFloat(amountCell.replace("$", ""));
-          amounts.push(amount);
-          types[typeCell] = (types[typeCell] || 0) + amount;
-        }
-      });
-      return { amounts, types };
-    }
 
-    function renderCharts() {
-      const { amounts, types } = extractDataFromTable();
-      const ctxLine = document.getElementById("lineChart").getContext("2d");
-      const ctxPie = document.getElementById("pieChart").getContext("2d");
-
-      new Chart(ctxLine, {
-        type: "line",
-        data: {
-          labels: amounts.map((_, i) => `Data ${i + 1}`),
-          datasets: [{
-            label: "Amount",
-            data: amounts,
-            borderColor: "#22c55e",
-            backgroundColor: "rgba(34,197,94,0.1)",
-            fill: true,
-            tension: 0.4
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: "#000" } } },
-          scales: {
-            x: { title: { display: true, text: "Data", color: "#000" } },
-            y: { title: { display: true, text: "Amount (USD)", color: "#000" } }
-          }
-        }
-      });
-
-      new Chart(ctxPie, {
-        type: "pie",
-        data: {
-          labels: Object.keys(types),
-          datasets: [{
-            label: "Amount by Type",
-            data: Object.values(types),
-            backgroundColor: ["#10b981", "#3b82f6", "#f97316", "#f43f5e"]
-          }]
-        },
-        options: { responsive: true }
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", renderCharts);
-
+    
     function toggleDarkMode() {
   const htmlEl = document.documentElement;
   const toggle = document.getElementById("darkToggle");
@@ -428,7 +345,7 @@ document.getElementById("menuToggle").addEventListener("click", function () {
 });
 
 
-
   </script>
 </body>
+
 </html>
