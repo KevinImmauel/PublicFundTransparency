@@ -72,7 +72,7 @@
 
       <!-- Balance Over Time Chart -->
       <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg">
-        <h2 class="text-2xl font-semibold text-center">Balance Over Time (ETH)</h2>
+        <h2 class="text-2xl font-semibold text-center">Balance Over Time (USD)</h2>
         <canvas id="balanceOverTimeChart" width="400" height="200"></canvas>
       </div>
     </div>
@@ -88,10 +88,9 @@
       document.documentElement.classList.toggle('dark');
     }
 
-    // Convert ISO timestamp to readable date/time
     function formatTimestamp(ts) {
       const date = new Date(ts);
-      return date.toLocaleString(); // e.g. "4/16/2025, 5:40:36 PM"
+      return date.toLocaleString();
     }
 
     async function fetchTransactions() {
@@ -102,11 +101,11 @@
         const tbody = document.getElementById('transactionTableBody');
         tbody.innerHTML = '';
 
-        // Prepare data for charts
         const ethData = [];
         const transactionDates = [];
         const balanceData = [];
         const dailyTransactions = {};
+        let cumulativeUSD = 0;
 
         transactions.forEach(tx => {
           // Add rows to the table
@@ -124,13 +123,18 @@
 
           tbody.appendChild(row);
 
-          // Prepare ETH Data and Transaction Frequency
-          ethData.push(tx.amountETH);
+          // ETH Donated Data
+          ethData.push(parseFloat(tx.amountETH));
+
+          // USD cumulative balance
+          cumulativeUSD += parseFloat(tx.amountUSD || 0);
+          balanceData.push(cumulativeUSD);
+
+          // Dates for charts
           const txDate = new Date(tx.timestamp).toLocaleDateString();
           transactionDates.push(txDate);
-          balanceData.push(tx.balanceETH); // Assuming balance is in the transaction object
 
-          // Calculate transaction frequency for last 7 days
+          // Transaction frequency count
           if (!dailyTransactions[txDate]) {
             dailyTransactions[txDate] = 0;
           }
@@ -164,7 +168,7 @@
         }
       });
 
-      // Transaction Frequency Chart (Last 7 Days)
+      // Transaction Frequency Chart
       const transactionFrequencyCtx = document.getElementById('transactionFrequencyChart').getContext('2d');
       new Chart(transactionFrequencyCtx, {
         type: 'bar',
@@ -178,14 +182,14 @@
         }
       });
 
-      // Balance Over Time Chart (ETH)
+      // Balance Over Time Chart (USD)
       const balanceOverTimeCtx = document.getElementById('balanceOverTimeChart').getContext('2d');
       new Chart(balanceOverTimeCtx, {
         type: 'line',
         data: {
           labels: transactionDates,
           datasets: [{
-            label: 'Balance Over Time (ETH)',
+            label: 'Balance Over Time (USD)',
             data: balanceData,
             borderColor: '#34D399',
             backgroundColor: 'rgba(56, 189, 248, 0.1)',

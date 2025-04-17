@@ -39,7 +39,7 @@
             Enable Light Mode
           </span>
         </label>
-        <a href="/index.html"
+        <a href="index.html"
           class="px-3 py-1 text-sm text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300/30 dark:hover:bg-white/10 transition duration-300">
           Home
         </a>
@@ -76,7 +76,7 @@
 
       <!-- Recent Donations Graph -->
       <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-        <h2 class="text-xl font-semibold mb-4">Recent Donations (ETH)</h2>
+        <h2 class="text-xl font-semibold mb-4">Recent Donations (USD)</h2>
         <canvas id="donationChart" width="300" height="200"></canvas>
       </div>
     </div>
@@ -84,54 +84,54 @@
 
   <script>
     const contractAddress = "0xe068dE326f03080aaF82b10027F862c786B909Ed";
-
+  
     function generateQR(event) {
       event.preventDefault();
-
+  
       const amountEth = document.getElementById("donationAmount").value;
       const purpose = document.getElementById("donationPurpose").value;
-
+  
       if (!amountEth || isNaN(amountEth) || parseFloat(amountEth) <= 0) {
         alert("Please enter a valid amount in ETH.");
         return;
       }
-
+  
       const amountWeiHex = "0x" + (parseFloat(amountEth) * 1e18).toString(16).split(".")[0];
       const link = `https://metamask.app.link/send/${contractAddress}?value=${amountWeiHex}`;
-
+  
       QRCode.toCanvas(document.getElementById("qrCanvas"), link, { width: 256 }, function (err) {
         if (err) console.error(err);
       });
     }
-
+  
     function toggleDarkMode() {
       document.documentElement.classList.toggle('dark');
     }
-
+  
     async function fetchAndRenderChart() {
       try {
         const res = await fetch('http://localhost:3000/transactions');
         const data = await res.json();
-
-        const lastTen = data.slice(-10).reverse(); // Get last 10 transactions (most recent first)
-
+  
+        const lastTen = data.slice(-10).reverse();
+  
         const labels = lastTen.map(tx => {
-          const date = new Date(tx.timestamp || tx.date || Date.now());
+          const date = new Date(tx.timestamp);
           return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         });
-
-        const values = lastTen.map(tx => parseFloat(tx.amount || tx.value || 0));
-
+  
+        const values = lastTen.map(tx => parseFloat(tx.amountUSD || 0));
+  
         const ctx = document.getElementById('donationChart').getContext('2d');
         new Chart(ctx, {
           type: 'line',
           data: {
             labels: labels,
             datasets: [{
-              label: 'ETH Donated',
+              label: 'USD Donated',
               data: values,
-              borderColor: '#4F46E5',
-              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              borderColor: '#22C55E',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
               tension: 0.3,
               fill: true,
               pointRadius: 4
@@ -142,6 +142,13 @@
             plugins: {
               legend: {
                 display: false
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `USD Donated: $${context.raw.toFixed(2)}`;
+                  }
+                }
               }
             },
             scales: {
@@ -163,10 +170,10 @@
         console.error("Failed to fetch transactions:", err);
       }
     }
-
-    // Load chart on page load
+  
     window.addEventListener('DOMContentLoaded', fetchAndRenderChart);
   </script>
+  
 </body>
 
 </html>
