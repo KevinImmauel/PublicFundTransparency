@@ -21,7 +21,11 @@ export default function DashboardPage() {
 
     const fetchTransactions = async () => {
         try {
-            const res = await fetch("http://localhost:3000/transactions");
+            const res = await fetch("http://localhost:3000/transactions", {
+                headers: {
+                  "Accept": "application/json",
+                },
+              });
             const data: Transaction[] = await res.json();
             setTransactions(data);
             renderCharts(data);

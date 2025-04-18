@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import Chart from "chart.js/auto";
+require("dotenv").config();
 
 type Transaction = {
   timestamp: string;
@@ -12,8 +13,11 @@ type Transaction = {
 export default function DonationPage() {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstance = useRef<Chart | null>(null);
+  const [contractAddress, setContractAddress] = useState("");
 
-  const contractAddress = "0xe068dE326f03080aaF82b10027F862c786B909Ed";
+  useEffect(() => {
+    setContractAddress(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "");
+  }, []);
 
   const generateQR = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,9 +41,13 @@ export default function DonationPage() {
 
   const fetchAndRenderChart = async () => {
     try {
-      const res = await fetch("http://localhost:3000/transactions");
+      const res = await fetch("http://localhost:3000/transactions", {
+  headers: {
+    "Accept": "application/json",
+  },
+});
       const data: Transaction[] = await res.json();
-
+      console.log("Fetched data:", data);
       const lastTen = data.slice(-10).reverse();
 
       const labels = lastTen.map((tx) => {
@@ -99,50 +107,54 @@ export default function DonationPage() {
   };
 
   useEffect(() => {
-    fetchAndRenderChart();
+    fetchAndRenderChart(); // initial chart load
+
+    const interval = setInterval(() => {
+      fetchAndRenderChart(); // poll every 5 seconds
+    }, 5000);
+
+    return () => clearInterval(interval); // cleanup
   }, []);
 
   return (
-    <>
-      <div className="bg-gray-100 dark:bg-[#0A0A0A] text-gray-900 dark:text-gray-100 p-6 mx-auto my-32 max-w-7xl">
-        <h1 className="text-4xl font-bold mb-6">Donation Tracker</h1>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <h2 className="text-xl font-semibold mb-4">Make a Donation</h2>
-            <form id="donationForm" className="space-y-4" onSubmit={generateQR}>
-              <input
-                name="donationAmount"
-                type="number"
-                step="0.0001"
-                placeholder="Amount in ETH"
-                className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                required
-              />
-              <input
-                name="donationPurpose"
-                type="text"
-                placeholder="Purpose"
-                className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                required
-              />
-              <button
-                type="submit"
-                className="w-60 transform rounded-lg border border-gray-300 bg-white px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-100 dark:border-gray-700 dark:bg-black dark:text-white dark:hover:bg-gray-900"
-              >
-                Generate QR
-              </button>
-            </form>
-            <div className="mt-6">
-              <canvas id="qrCanvas" className="mx-auto"></canvas>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
-            <h2 className="text-xl font-semibold mb-4">Recent Donations (USD)</h2>
-            <canvas ref={chartRef} width={300} height={200}></canvas>
+    <div className="bg-gray-100 dark:bg-[#0A0A0A] text-gray-900 dark:text-gray-100 p-6 mx-auto my-32 max-w-7xl">
+      <h1 className="text-4xl font-bold mb-6">Donation Tracker</h1>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h2 className="text-xl font-semibold mb-4">Make a Donation</h2>
+          <form id="donationForm" className="space-y-4" onSubmit={generateQR}>
+            <input
+              name="donationAmount"
+              type="number"
+              step="0.0001"
+              placeholder="Amount in ETH"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            />
+            <input
+              name="donationPurpose"
+              type="text"
+              placeholder="Purpose"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            />
+            <button
+              type="submit"
+              className="w-60 transform rounded-lg border border-gray-300 bg-white px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-100 dark:border-gray-700 dark:bg-black dark:text-white dark:hover:bg-gray-900"
+            >
+              Generate QR
+            </button>
+          </form>
+          <div className="mt-6">
+            <canvas id="qrCanvas" className="mx-auto"></canvas>
           </div>
         </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h2 className="text-xl font-semibold mb-4">Recent Donations (USD)</h2>
+          <canvas ref={chartRef} width={300} height={200}></canvas>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

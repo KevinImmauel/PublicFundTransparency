@@ -17,7 +17,11 @@ function page() {
         const form = event.currentTarget;
         const adr = (form.elements.namedItem("Address") as HTMLInputElement)?.value;
         try {
-            const res = await fetch("http://localhost:3000/donor/" + adr);
+            const res = await fetch("http://localhost:3000/donor/" + adr, {
+                headers: {
+                  "Accept": "application/json",
+                },
+              });
             const json = await res.json();
             const data: Transaction[] = json.donations;
             setTransactions(data);
