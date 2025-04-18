@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import Chart from "chart.js/auto";
+import { TooltipItem } from 'chart.js';
+
 require("dotenv").config();
 
 type Transaction = {
@@ -87,7 +89,10 @@ export default function DonationPage() {
             tooltip: {
               callbacks: {
                 label: function (context) {
-                  return `USD Donated: $${context.raw.toFixed(2)}`;
+                  if (typeof context.raw === "number") {
+                    return `USD Donated: $${context.raw.toFixed(2)}`;
+                  }
+                  return "USD Donated: $0.00";
                 },
               },
             },
@@ -102,7 +107,7 @@ export default function DonationPage() {
             },
           },
         },
-      });
+    });
     } catch (err) {
       console.error("Failed to fetch transactions:", err);
     }
