@@ -1,42 +1,28 @@
 "use client";
 
-import {
-  Navbar,
-  NavBody,
-  NavItems,
-  MobileNav,
-  MobileNavHeader,
-  MobileNavMenu,
-  MobileNavToggle,
-  NavbarLogo,
-  NavbarButton,
-} from "@/components/ui/resizable-navbar";
-
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
 import Chart from "chart.js/auto";
-import Footer from "@/components/Footer";
+
+type Transaction = {
+  timestamp: string;
+  amountUSD: string;
+};
 
 export default function DonationPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const chartRef = useRef(null);
-  const chartInstance = useRef(null);
-
-  const navItems = [
-    { name: "Home", link: "/" },
-    { name: "Dashboard", link: "/dashboard" },
-    { name: "Donate", link: "/donation" },
-    { name: "Contact", link: "#contact-us" },
-  ];
+  const chartRef = useRef<HTMLCanvasElement | null>(null);
+  const chartInstance = useRef<Chart | null>(null);
 
   const contractAddress = "0xe068dE326f03080aaF82b10027F862c786B909Ed";
 
-  const generateQR = async (event) => {
+  const generateQR = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const amountEth = event.target.donationAmount.value;
-    const purpose = event.target.donationPurpose.value;
 
-    if (!amountEth || isNaN(amountEth) || parseFloat(amountEth) <= 0) {
+    const form = event.currentTarget;
+    const amountEth = (form.elements.namedItem("donationAmount") as HTMLInputElement)?.value;
+    const purpose = (form.elements.namedItem("donationPurpose") as HTMLInputElement)?.value;
+
+    if (!amountEth || isNaN(Number(amountEth)) || parseFloat(amountEth) <= 0) {
       alert("Please enter a valid amount in ETH.");
       return;
     }
@@ -44,7 +30,7 @@ export default function DonationPage() {
     const amountWeiHex = "0x" + (parseFloat(amountEth) * 1e18).toString(16).split(".")[0];
     const link = `https://metamask.app.link/send/${contractAddress}?value=${amountWeiHex}`;
 
-    QRCode.toCanvas(document.getElementById("qrCanvas"), link, { width: 256 }, function (err) {
+    QRCode.toCanvas(document.getElementById("qrCanvas") as HTMLCanvasElement, link, { width: 256 }, function (err) {
       if (err) console.error(err);
     });
   };
@@ -52,7 +38,7 @@ export default function DonationPage() {
   const fetchAndRenderChart = async () => {
     try {
       const res = await fetch("http://localhost:3000/transactions");
-      const data = await res.json();
+      const data: Transaction[] = await res.json();
 
       const lastTen = data.slice(-10).reverse();
 
@@ -61,15 +47,17 @@ export default function DonationPage() {
         return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
       });
 
-      const values = lastTen.map((tx) => parseFloat(tx.amountUSD || 0));
+      const values = lastTen.map((tx) => parseFloat(tx.amountUSD || "0"));
 
-      const ctx = chartRef.current.getContext("2d");
+      const ctx = chartRef.current?.getContext("2d");
+      if (!ctx) return;
+
       if (chartInstance.current) chartInstance.current.destroy();
 
       chartInstance.current = new Chart(ctx, {
         type: "line",
         data: {
-          labels: labels,
+          labels,
           datasets: [
             {
               label: "USD Donated",
@@ -85,9 +73,7 @@ export default function DonationPage() {
         options: {
           responsive: true,
           plugins: {
-            legend: {
-              display: false,
-            },
+            legend: { display: false },
             tooltip: {
               callbacks: {
                 label: function (context) {
@@ -99,14 +85,10 @@ export default function DonationPage() {
           scales: {
             y: {
               beginAtZero: true,
-              ticks: {
-                color: "#9CA3AF",
-              },
+              ticks: { color: "#9CA3AF" },
             },
             x: {
-              ticks: {
-                color: "#9CA3AF",
-              },
+              ticks: { color: "#9CA3AF" },
             },
           },
         },
@@ -122,34 +104,9 @@ export default function DonationPage() {
 
   return (
     <>
-      <Navbar>
-        <NavBody visible>
-          <NavbarLogo />
-          <NavItems items={navItems} />
-          <NavbarButton href="/donate">Get Started</NavbarButton>
-        </NavBody>
-
-        {/* Mobile View */}
-        <MobileNav visible>
-          <MobileNavHeader>
-            <NavbarLogo />
-            <MobileNavToggle isOpen={menuOpen} onClick={() => setMenuOpen(!menuOpen)} />
-          </MobileNavHeader>
-          <MobileNavMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)}>
-            {navItems.map((item, idx) => (
-              <a key={idx} href={item.link} onClick={() => setMenuOpen(false)}>
-                {item.name}
-              </a>
-            ))}
-          </MobileNavMenu>
-        </MobileNav>
-      </Navbar>
-
-      <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6 min-h-screen">
+      <div className="bg-gray-100 dark:bg-[#0A0A0A] text-gray-900 dark:text-gray-100 p-6 mx-auto my-32 max-w-7xl">
         <h1 className="text-4xl font-bold mb-6">Donation Tracker</h1>
-
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Donate Form */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
             <h2 className="text-xl font-semibold mb-4">Make a Donation</h2>
             <form id="donationForm" className="space-y-4" onSubmit={generateQR}>
@@ -170,7 +127,7 @@ export default function DonationPage() {
               />
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                className="w-60 transform rounded-lg border border-gray-300 bg-white px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-100 dark:border-gray-700 dark:bg-black dark:text-white dark:hover:bg-gray-900"
               >
                 Generate QR
               </button>
@@ -180,14 +137,12 @@ export default function DonationPage() {
             </div>
           </div>
 
-          {/* Recent Donations Graph */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
             <h2 className="text-xl font-semibold mb-4">Recent Donations (USD)</h2>
-            <canvas ref={chartRef} width="300" height="200"></canvas>
+            <canvas ref={chartRef} width={300} height={200}></canvas>
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

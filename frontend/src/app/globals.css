@@ -112,10 +112,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-body {
-  background-color: rgba(229, 229, 229, 0.8);
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
