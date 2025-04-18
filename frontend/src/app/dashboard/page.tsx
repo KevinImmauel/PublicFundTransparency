@@ -19,9 +19,11 @@ export default function DashboardPage() {
         fetchTransactions();
     }, []);
 
+    const serverurl = process.env.NEXT_PUBLIC_SERVER_URL
+
     const fetchTransactions = async () => {
         try {
-            const res = await fetch("http://localhost:3000/transactions", {
+            const res = await fetch(serverurl + "/transactions", {
                 headers: {
                   "Accept": "application/json",
                 },

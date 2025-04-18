@@ -12,12 +12,13 @@ type Transaction = {
 
 function page() {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const serverurl = process.env.NEXT_PUBLIC_SERVER_URL
     const fetchTransactions = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const form = event.currentTarget;
         const adr = (form.elements.namedItem("Address") as HTMLInputElement)?.value;
         try {
-            const res = await fetch("http://localhost:3000/donor/" + adr, {
+            const res = await fetch(serverurl + "/donor/" + adr, {
                 headers: {
                   "Accept": "application/json",
                 },
