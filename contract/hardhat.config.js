@@ -1,15 +1,12 @@
 require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config();
-
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
-const PRIVATE_KEY = process.env.PRIVATE_KEY;
+require('dotenv').config();
 
 module.exports = {
   solidity: "0.8.28",
   networks: {
     sepolia: {
-      url: SEPOLIA_RPC_URL,
-      accounts: [PRIVATE_KEY],
-    },
-  },
+      url: `${process.env.INFURA_API_KEY}`,
+      accounts: [`0x${process.env.PRIVATE_KEY}`]
+    }
+  }
 };
